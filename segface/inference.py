@@ -64,8 +64,20 @@ class SegFaceParser:
         # Build model graph
         self.model = get_model(backbone, input_resolution, model_name)
 
-        # Load weights (handles DataParallel "module." prefix)
-        state_dict = torch.load(checkpoint, map_location=device, weights_only=True)
+        # Load weights — handle both raw state dicts and full training
+        # checkpoints (which wrap weights under 'state_dict_backbone'
+        # or 'state_dict' along with epoch, optimizer, etc.)
+        raw = torch.load(checkpoint, map_location=device, weights_only=False)
+        if isinstance(raw, dict):
+            if "state_dict_backbone" in raw:
+                state_dict = raw["state_dict_backbone"]
+            elif "state_dict" in raw:
+                state_dict = raw["state_dict"]
+            else:
+                state_dict = raw
+        else:
+            state_dict = raw
+        # Strip DataParallel "module." prefix if present
         if any(k.startswith("module.") for k in state_dict):
             state_dict = {k.removeprefix("module."): v for k, v in state_dict.items()}
         self.model.load_state_dict(state_dict)
