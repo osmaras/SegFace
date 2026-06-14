@@ -5,6 +5,7 @@ import torchvision.models as models
 
 from typing import Any, Optional, Tuple, Type
 from torchvision.models import convnext_large, convnext_base, convnext_small, convnext_tiny, swin_b, swin_v2_b, swin_v2_s, swin_v2_t, mobilenet_v3_large, efficientnet_v2_m
+from torchvision.models import ConvNeXt_Base_Weights, ConvNeXt_Small_Weights, ResNet101_Weights, MobileNet_V3_Large_Weights, EfficientNet_V2_M_Weights
 import pdb
 import numpy as np
 import sys
@@ -209,37 +210,37 @@ class SegFaceCeleb(nn.Module):
             self.multi_scale_features = []
 
         if self.model == "convnext_base":
-            convnext = convnext_base(pretrained=True)
+            convnext = convnext_base(weights=ConvNeXt_Base_Weights.IMAGENET1K_V1)
             self.backbone = torch.nn.Sequential(*(list(convnext.children())[:-1]))
             self.target_layer_names = ['0.1', '0.3', '0.5', '0.7']
             self.multi_scale_features = []
 
         if self.model == "convnext_small":
-            convnext = convnext_small(pretrained=True)
+            convnext = convnext_small(weights=ConvNeXt_Small_Weights.IMAGENET1K_V1)
             self.backbone = torch.nn.Sequential(*(list(convnext.children())[:-1]))
             self.target_layer_names = ['0.1', '0.3', '0.5', '0.7']
             self.multi_scale_features = []
 
         if self.model == "convnext_tiny":
-            convnext = convnext_small(pretrained=True)
+            convnext = convnext_small(weights=ConvNeXt_Small_Weights.IMAGENET1K_V1)
             self.backbone = torch.nn.Sequential(*(list(convnext.children())[:-1]))
             self.target_layer_names = ['0.1', '0.3', '0.5', '0.7']
             self.multi_scale_features = []           
         
         if self.model == "resnet":
-            resnet101 = models.resnet101(pretrained=True)
+            resnet101 = models.resnet101(weights=ResNet101_Weights.IMAGENET1K_V1)
             self.backbone = torch.nn.Sequential(*(list(resnet101.children())[:-1]))
             self.target_layer_names = ['4', '5', '6', '7']
             self.multi_scale_features = []
 
         if self.model == "mobilenet":
-            mobilenet = mobilenet_v3_large(pretrained=True).features
+            mobilenet = mobilenet_v3_large(weights=MobileNet_V3_Large_Weights.IMAGENET1K_V1).features
             self.backbone = mobilenet
             self.target_layer_names = ['3', '6', '12', '16']
             self.multi_scale_features = []
         
         if self.model == "efficientnet":
-            efficientnet = efficientnet_v2_m(pretrained=True).features
+            efficientnet = efficientnet_v2_m(weights=EfficientNet_V2_M_Weights.IMAGENET1K_V1).features
             self.backbone = efficientnet
             self.target_layer_names = ['2', '3', '5', '8']
             self.multi_scale_features = []
